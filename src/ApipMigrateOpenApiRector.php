@@ -2,13 +2,10 @@
 
 namespace App;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\HttpOperation;
 use ApiPlatform\OpenApi\Model\Operation;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor;
 use PhpParser\Node\Attribute;
 use PhpParser\Node\Expr\New_;
 use Rector\PhpParser\Node\Value\ValueResolver;
@@ -32,22 +29,19 @@ final class ApipMigrateOpenApiRector extends AbstractRector
             return $this->convert($node);
         }
 
-        if ($node instanceof Attribute && ApiProperty::class === $this->getName($node->name)) {
-            return $this->convert($node);
-        }
-
         return null;
     }
 
     private function convert(Node $node): ?Node
     {
-        $scope = $node->getAttribute('scope');
-
         $openApiArgs = [];
+        $toDelete = [];
+        $changed = false;
 
         foreach ($node->args as $k => $arg) {
             if ('openapiContext' === $this->getName($arg)) {
-                unset($node->args[$k]);
+                $changed = true;
+                $toDelete[] = $k;
 
                 $argValue = $arg->value;
 
@@ -71,7 +65,7 @@ final class ApipMigrateOpenApiRector extends AbstractRector
             }
 
             if ('openapi' === $this->getName($arg)) {
-                unset($node->args[$k]);
+                $toDelete[] = $k;
 
                 foreach ($arg->value->args ?? [] as $item) {
                     $openApiArgs[] = new Node\Arg(
@@ -88,10 +82,13 @@ final class ApipMigrateOpenApiRector extends AbstractRector
             }
         }
 
-        if (!$openApiArgs) {
+        if (!$openApiArgs || !$changed) {
             return null;
         }
 
+        foreach ($toDelete as $k) {
+            unset($node->args[$k]);
+        }
 
         $openApi = new Arg(
             new New_(

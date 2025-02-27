@@ -2,11 +2,11 @@
     "type": "project",
     "require": {
         "rector/rector": "dev-main as 2.0.10@dev",
-        "stevebauman/unfinalize": "^2.1"
+        "stevebauman/unfinalize": "^2.1.1"
     },
     "require-dev": {
-        "api-platform/core": "^4.0",
-        "phpunit/phpunit": "^11.5.8",
+        "api-platform/core": "^4.0.18",
+        "phpunit/phpunit": "^11.5.10",
         "symfony/var-dumper": "^7.2.3"
     },
     "autoload": {
