@@ -1,3 +1,9 @@
+**THIS PROJECT HAS BEEN ABANDONED**
+
+It has worked for me, I hope it will for for you!
+But I won't maintain it.
+
+
 # Rector rule for migration API-Platform OpenApiContext
 
 Provide this kind of diff:
